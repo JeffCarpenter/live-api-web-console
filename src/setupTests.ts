@@ -19,3 +19,47 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// Mock environment variables for testing
+process.env.REACT_APP_GEMINI_API_KEY = 'test-api-key';
+
+// Polyfill for structuredClone (required by vega-lite)
+global.structuredClone = global.structuredClone || ((val: any) => JSON.parse(JSON.stringify(val)));
+
+// Mock HTML media element play method
+Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+  writable: true,
+  value: jest.fn().mockImplementation(() => Promise.resolve()),
+});
+
+// Mock canvas for vega-scenegraph
+HTMLCanvasElement.prototype.getContext = jest.fn(() => {
+  return {
+    fillRect: jest.fn(),
+    clearRect: jest.fn(),
+    getImageData: jest.fn(() => ({
+      data: new Array(4)
+    })),
+    putImageData: jest.fn(),
+    createImageData: jest.fn(() => []),
+    setTransform: jest.fn(),
+    drawImage: jest.fn(),
+    save: jest.fn(),
+    fillText: jest.fn(),
+    restore: jest.fn(),
+    beginPath: jest.fn(),
+    moveTo: jest.fn(),
+    lineTo: jest.fn(),
+    closePath: jest.fn(),
+    stroke: jest.fn(),
+    translate: jest.fn(),
+    scale: jest.fn(),
+    rotate: jest.fn(),
+    arc: jest.fn(),
+    fill: jest.fn(),
+    measureText: jest.fn(() => ({ width: 0 })),
+    transform: jest.fn(),
+    rect: jest.fn(),
+    clip: jest.fn(),
+  };
+}) as any;
