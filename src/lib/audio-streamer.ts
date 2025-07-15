@@ -20,22 +20,24 @@ import {
 } from "./audioworklet-registry";
 
 export class AudioStreamer {
-  private sampleRate: number = 24000;
-  private bufferSize: number = 7680;
+  private sampleRate = 24000;
+  private bufferSize = 7680;
   // A queue of audio buffers to be played. Each buffer is a Float32Array.
   private audioQueue: Float32Array[] = [];
-  private isPlaying: boolean = false;
+  private isPlaying = false;
   // Indicates if the stream has finished playing, e.g., interrupted.
-  private isStreamComplete: boolean = false;
+  private isStreamComplete = false;
   private checkInterval: number | null = null;
-  private scheduledTime: number = 0;
-  private initialBufferTime: number = 0.1; //0.1 // 100ms initial buffer
+  private scheduledTime = 0;
+  private initialBufferTime = 0.1; //0.1 // 100ms initial buffer
   // Web Audio API nodes. source => gain => destination
   public gainNode: GainNode;
   public source: AudioBufferSourceNode;
   private endOfQueueAudioSource: AudioBufferSourceNode | null = null;
 
-  public onComplete = () => {};
+  public onComplete = () => {
+    // Default empty implementation for completion callback
+  };
 
   constructor(public context: AudioContext) {
     this.gainNode = this.context.createGain();

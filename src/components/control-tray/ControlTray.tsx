@@ -61,7 +61,9 @@ const MediaStreamButton = memo(
 function ControlTray({
   videoRef,
   children,
-  onVideoStreamChange = () => {},
+  onVideoStreamChange = () => {
+    // Default empty implementation
+  },
   supportsVideo,
   enableEditingSettings,
 }: ControlTrayProps) {
