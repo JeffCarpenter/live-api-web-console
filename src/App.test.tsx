@@ -16,10 +16,19 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from './App';
 
-test('renders learn react link', () => {
+// Provide required environment variables for the app during tests.
+process.env.REACT_APP_GEMINI_API_KEY = 'test-key';
+
+// Mock modules that use ESM syntax incompatible with Jest's default config.
+jest.mock('react-syntax-highlighter', () => () => null);
+jest.mock('react-syntax-highlighter/dist/esm/styles/hljs', () => ({}));
+jest.mock('./components/altair/Altair', () => ({ Altair: () => <div /> }));
+
+const App = require('./App').default;
+
+test('renders console heading', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const heading = screen.getByText(/Console/i);
+  expect(heading).toBeInTheDocument();
 });
