@@ -19,3 +19,11 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// Provide required environment variables for the app during tests.
+process.env.REACT_APP_GEMINI_API_KEY = 'test-key';
+
+// Mock modules that use ESM syntax incompatible with Jest's default config.
+jest.mock('react-syntax-highlighter', () => () => null);
+jest.mock('react-syntax-highlighter/dist/esm/styles/hljs', () => ({}));
+jest.mock('./components/altair/Altair', () => ({ Altair: () => null }));
