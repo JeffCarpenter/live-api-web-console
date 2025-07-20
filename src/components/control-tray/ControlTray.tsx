@@ -38,8 +38,8 @@ type MediaStreamButtonProps = {
   isStreaming: boolean;
   onIcon: string;
   offIcon: string;
-  start: () => Promise<any>;
-  stop: () => any;
+  start: () => Promise<MediaStream | void>;
+  stop: () => void;
 };
 
 /**
@@ -124,7 +124,10 @@ function ControlTray({
         return;
       }
 
-      const ctx = canvas.getContext("2d")!;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        return;
+      }
       canvas.width = video.videoWidth * 0.25;
       canvas.height = video.videoHeight * 0.25;
       if (canvas.width + canvas.height > 0) {
@@ -146,18 +149,22 @@ function ControlTray({
   }, [connected, activeVideoStream, client, videoRef]);
 
   //handler for swapping from one video-stream to the next
-  const changeStreams = (next?: UseMediaStreamResult) => async () => {
-    if (next) {
-      const mediaStream = await next.start();
-      setActiveVideoStream(mediaStream);
-      onVideoStreamChange(mediaStream);
-    } else {
-      setActiveVideoStream(null);
-      onVideoStreamChange(null);
-    }
-
-    videoStreams.filter((msr) => msr !== next).forEach((msr) => msr.stop());
-  };
+  const changeStreams =
+    (next?: UseMediaStreamResult) =>
+    async (): Promise<MediaStream | void> => {
+      if (next) {
+        const mediaStream = await next.start();
+        setActiveVideoStream(mediaStream);
+        onVideoStreamChange(mediaStream);
+        videoStreams.filter((msr) => msr !== next).forEach((msr) => msr.stop());
+        return mediaStream;
+      } else {
+        setActiveVideoStream(null);
+        onVideoStreamChange(null);
+        videoStreams.forEach((msr) => msr.stop());
+        return;
+      }
+    };
 
   return (
     <section className="control-tray">
