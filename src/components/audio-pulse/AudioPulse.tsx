@@ -45,7 +45,11 @@ export default function AudioPulse({ active, volume, hover }: AudioPulseProps) {
 
     update();
 
-    return () => clearTimeout((timeout as number)!);
+    return () => {
+      if (timeout !== null) {
+        clearTimeout(timeout);
+      }
+    };
   }, [volume]);
 
   return (
@@ -55,7 +59,11 @@ export default function AudioPulse({ active, volume, hover }: AudioPulseProps) {
         .map((_, i) => (
           <div
             key={i}
-            ref={(el) => (lines.current[i] = el!)}
+            ref={(el) => {
+              if (el) {
+                lines.current[i] = el;
+              }
+            }}
             style={{ animationDelay: `${i * 133}ms` }}
           />
         ))}

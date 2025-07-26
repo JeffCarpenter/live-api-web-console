@@ -44,7 +44,7 @@ export class AudioStreamer {
     this.addPCM16 = this.addPCM16.bind(this);
   }
 
-  async addWorklet<T extends (d: any) => void>(
+  async addWorklet<T extends (ev: MessageEvent) => void>(
     workletName: string,
     workletSrc: string,
     handler: T
@@ -59,8 +59,8 @@ export class AudioStreamer {
     }
 
     if (!workletsRecord) {
-      registeredWorklets.set(this.context, {});
-      workletsRecord = registeredWorklets.get(this.context)!;
+      workletsRecord = {};
+      registeredWorklets.set(this.context, workletsRecord);
     }
 
     // create new record to fill in as becomes available
@@ -141,7 +141,10 @@ export class AudioStreamer {
       this.audioQueue.length > 0 &&
       this.scheduledTime < this.context.currentTime + SCHEDULE_AHEAD_TIME
     ) {
-      const audioData = this.audioQueue.shift()!;
+      const audioData = this.audioQueue.shift();
+      if (!audioData) {
+        break;
+      }
       const audioBuffer = this.createAudioBuffer(audioData);
       const source = this.context.createBufferSource();
 
