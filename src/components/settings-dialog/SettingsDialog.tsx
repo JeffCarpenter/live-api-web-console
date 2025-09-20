@@ -22,10 +22,12 @@ export default function SettingsDialog() {
     if (!Array.isArray(config.tools)) {
       return [];
     }
-    return (config.tools as Tool[])
-      .filter((t: Tool): t is FunctionDeclarationsTool =>
-        Array.isArray((t as any).functionDeclarations)
-      )
+      return (config.tools as Tool[])
+        .filter((t: Tool): t is FunctionDeclarationsTool =>
+          Array.isArray(
+            (t as Partial<FunctionDeclarationsTool>).functionDeclarations,
+          )
+        )
       .map((t) => t.functionDeclarations)
       .filter((fc) => !!fc)
       .flat();
@@ -138,9 +140,9 @@ export default function SettingsDialog() {
                     className="fd-row-description"
                     type="text"
                     defaultValue={fd.description}
-                    onBlur={(e) =>
-                      updateFunctionDescription(fd.name!, e.target.value)
-                    }
+                      onBlur={(e) =>
+                        updateFunctionDescription(fd.name ?? "", e.target.value)
+                      }
                   />
                 </div>
               ))}
