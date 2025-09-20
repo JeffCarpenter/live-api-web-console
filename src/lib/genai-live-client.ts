@@ -287,7 +287,7 @@ export class GenAILiveClient extends EventEmitter<LiveClientEventTypes> {
   /**
    * send normal content parts such as { text }
    */
-  send(parts: Part | Part[], turnComplete: boolean = true) {
+  send(parts: Part | Part[], turnComplete = true) {
     this.session?.sendClientContent({ turns: parts, turnComplete });
     this.log(`client.send`, {
       turns: Array.isArray(parts) ? parts : [parts],

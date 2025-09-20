@@ -98,10 +98,10 @@ const RenderPart = memo(({ part }: { part: Part }) => {
       <div className="part part-executableCode">
         <h5>executableCode: {part.executableCode.language}</h5>
         <SyntaxHighlighter
-          language={part.executableCode!.language!.toLowerCase()}
+          language={part.executableCode.language?.toLowerCase() || ""}
           style={dark}
         >
-          {part.executableCode!.code!}
+          {part.executableCode.code || ""}
         </SyntaxHighlighter>
       </div>
     );
@@ -109,9 +109,9 @@ const RenderPart = memo(({ part }: { part: Part }) => {
   if (part.codeExecutionResult) {
     return (
       <div className="part part-codeExecutionResult">
-        <h5>codeExecutionResult: {part.codeExecutionResult!.outcome}</h5>
+        <h5>codeExecutionResult: {part.codeExecutionResult.outcome}</h5>
         <SyntaxHighlighter language="json" style={dark}>
-          {tryParseCodeExecutionResult(part.codeExecutionResult!.output!)}
+          {tryParseCodeExecutionResult(part.codeExecutionResult.output || "")}
         </SyntaxHighlighter>
       </div>
     );

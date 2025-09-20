@@ -19,3 +19,62 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+const originalGeminiKey = process.env.REACT_APP_GEMINI_API_KEY;
+process.env.REACT_APP_GEMINI_API_KEY = 'test-key';
+const mediaElementPlayDescriptor = Object.getOwnPropertyDescriptor(
+  HTMLMediaElement.prototype,
+  'play',
+);
+const suppressedConsoleErrors = [/ReactDOMTestUtils\.act/];
+const originalConsoleError = console.error;
+const consoleErrorMock = jest
+  .spyOn(console, 'error')
+  .mockImplementation((...args: Parameters<typeof console.error>) => {
+    const [message] = args;
+    if (
+      typeof message === 'string' &&
+      suppressedConsoleErrors.some((pattern) => pattern.test(message))
+    ) {
+      return;
+    }
+    originalConsoleError(...args);
+  });
+
+beforeAll(() => {
+  Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+    configurable: true,
+    writable: true,
+    value: jest.fn().mockResolvedValue(undefined),
+  });
+});
+
+// Mock modules that use ESM syntax incompatible with Jest's default config.
+jest.mock('react-syntax-highlighter', () => () => null);
+jest.mock('react-syntax-highlighter/dist/esm/styles/hljs', () => ({}));
+jest.mock('./components/altair/Altair', () => ({ Altair: () => null }));
+
+afterEach(() => {
+  jest.clearAllMocks();
+  process.env.REACT_APP_GEMINI_API_KEY = 'test-key';
+});
+
+afterAll(() => {
+  if (originalGeminiKey === undefined) {
+    delete process.env.REACT_APP_GEMINI_API_KEY;
+  } else {
+    process.env.REACT_APP_GEMINI_API_KEY = originalGeminiKey;
+  }
+
+  if (mediaElementPlayDescriptor) {
+    Object.defineProperty(
+      HTMLMediaElement.prototype,
+      'play',
+      mediaElementPlayDescriptor,
+    );
+  } else {
+    delete (HTMLMediaElement.prototype as { play?: unknown }).play;
+  }
+
+  consoleErrorMock.mockRestore();
+});
